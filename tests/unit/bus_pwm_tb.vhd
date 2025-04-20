@@ -29,7 +29,6 @@ END ENTITY bus_pwm_tb;
 
 ARCHITECTURE arch OF bus_pwm_tb IS
     CONSTANT CLK_PERIOD : DELAY_LENGTH := 20 ns; -- 50 MHz
-    CONSTANT TIMEOUT    : DELAY_LENGTH := 50 * CLK_PERIOD;
     SIGNAL clk          : STD_ULOGIC   := '1';
     SIGNAL rstn         : STD_ULOGIC   := '0';
     SIGNAL done         : STD_ULOGIC   := '0'; -- flag end of tests

@@ -4,5 +4,11 @@ neorv32.files = [
     "neorv32/sim/*.vhd",
 ]
 tool.files = [
-    "tests/tool/*.vhd*",
+    "tests/tool/*.vhd",
+]
+unit.files = [
+    "tests/unit/*.vhd",
+]
+size.files = [
+    "tests/size/*.vhd",
 ]

@@ -83,45 +83,45 @@ export -f riscv_bash
 # OSS tools for formal HDL verification.
 function ghdl () {
     formal_args="--hostname formal --entrypoint ghdl $(get_common_args)"
-    docker run $formal_args ghcr.io/nikleberg/formal:latest-staging $*
+    docker run $formal_args ghcr.io/nikleberg/formal $*
 }
 export -f ghdl
 function sby () {
     formal_args="--hostname formal --entrypoint sby $(get_common_args)"
-    docker run $formal_args ghcr.io/nikleberg/formal:latest-staging $*
+    docker run $formal_args ghcr.io/nikleberg/formal $*
 }
 export -f sby
 function yosys () {
     formal_args="--hostname formal --entrypoint yosys $(get_common_args)"
-    docker run $formal_args ghcr.io/nikleberg/formal:latest-staging $*
+    docker run $formal_args ghcr.io/nikleberg/formal $*
 }
 export -f yosys
 function formal_make () {
     formal_args="--hostname formal --entrypoint make $(get_common_args)"
-    docker run $formal_args ghcr.io/nikleberg/formal:latest-staging $*
+    docker run $formal_args ghcr.io/nikleberg/formal $*
 }
 export -f formal_make
 function ghdl_make () { formal_make $*; }
 export -f ghdl_make
 function formal_bash () {
     formal_args="--hostname formal --entrypoint bash $(get_common_args)"
-    docker run $formal_args ghcr.io/nikleberg/formal:latest-staging $*
+    docker run $formal_args ghcr.io/nikleberg/formal $*
 }
 export -f formal_bash
 
 # NVC tool, simulation of HDL.
 function nvc () {
     nvc_args="--hostname nvc $(get_common_args)"
-    docker run $nvc_args ghcr.io/nikleberg/nvc $*
+    docker run $nvc_args ghcr.io/nikleberg/nvc:master $*
 }
 export -f nvc
 function nvc_make () {
     nvc_args="--hostname nvc --entrypoint make $(get_common_args)"
-    docker run $nvc_args ghcr.io/nikleberg/nvc $*
+    docker run $nvc_args ghcr.io/nikleberg/nvc:master $*
 }
 export -f nvc_make
 function nvc_bash () {
     nvc_args="--hostname nvc --entrypoint bash $(get_common_args)"
-    docker run $nvc_args ghcr.io/nikleberg/nvc $*
+    docker run $nvc_args ghcr.io/nikleberg/nvc:master $*
 }
 export -f nvc_bash
