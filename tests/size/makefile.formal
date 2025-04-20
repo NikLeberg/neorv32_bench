@@ -6,17 +6,19 @@ include $(PROJ_ROOT)/scripts/makefile.neorv32
 .PHONY: test
 test: size
 
+JQ_TABLE_FILTER = \
+	["Config","LUT6","FF"], ["------","----","--"], \
+	( to_entries[] | [ .key, (.value.lut6|tostring), (.value.ff|tostring) ] ) \
+	| @tsv
+
 .PHONY: size
 size: size_minimal size_lite size_standard size_full size_numa
-	@printf "+----------+-------+-------+\n"
-	@printf "| %-8s | %-5s | %-5s |\n" "Config" "LUT6" "FF"
-	@printf "+----------+-------+-------+\n"
-	@for config in minimal lite standard full numa; do \
-		set -- `jq -r "[.lut6, .ff] | @tsv" $(PROJ_ROOT)/build/size/size_$$config.json`; \
-		lut=$$1; ff=$$2; \
-		printf "| %-8s | %-5s | %-5s |\n" "$$config" "$$lut" "$$ff"; \
-	done
-	@printf "+----------+-------+-------+\n"
+	@echo "==="
+	@jq -s '{minimal:.[0], lite:.[1], std:.[2], full:.[3], numa:.[4]}' \
+		$(foreach f,$^,$(PROJ_ROOT)/build/size/$f.json) \
+		> $(PROJ_ROOT)/build/size/size.json
+	@jq -r '$(JQ_TABLE_FILTER)' $(PROJ_ROOT)/build/size/size.json
+	@echo "==="
 
 neorv32_build: neorv32-obj08.cf
 neorv32-obj08.cf: $(NEORV32_SRCS)
