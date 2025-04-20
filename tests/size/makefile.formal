@@ -1,0 +1,38 @@
+# SPDX-License-Identifier: MIT
+
+PROJ_ROOT ?= $(abspath ../..)
+include $(PROJ_ROOT)/scripts/makefile.neorv32
+
+.PHONY: test
+test: size
+
+.PHONY: size
+size: size_minimal size_lite size_standard size_full size_numa
+	@printf "+----------+-------+-------+\n"
+	@printf "| %-8s | %-5s | %-5s |\n" "Config" "LUT6" "FF"
+	@printf "+----------+-------+-------+\n"
+	@for config in minimal lite standard full numa; do \
+		set -- `jq -r "[.lut6, .ff] | @tsv" $(PROJ_ROOT)/build/size/size_$$config.json`; \
+		lut=$$1; ff=$$2; \
+		printf "| %-8s | %-5s | %-5s |\n" "$$config" "$$lut" "$$ff"; \
+	done
+	@printf "+----------+-------+-------+\n"
+
+neorv32_build: neorv32-obj08.cf
+neorv32-obj08.cf: $(NEORV32_SRCS)
+	@mkdir -p $(PROJ_ROOT)/build/size && \
+		cd $(PROJ_ROOT)/build/size && \
+		ghdl -a --std=08 --work=neorv32 $(NEORV32_SRCS)
+
+config_code = $(subst minimal,0,$(subst lite,1,$(subst standard,2,$(subst full,3,$(subst numa,4,$(strip $1))))))
+
+size_%: neorv32_build force
+	@mkdir -p $(PROJ_ROOT)/build/size && \
+		cd $(PROJ_ROOT)/build/size && \
+		CONFIG_CODE=$(call config_code,$*) CONFIG_NAME=$* \
+			yosys -m ghdl -c $(PROJ_ROOT)/tests/size/yosys_synth.tcl
+
+# Pattern-rules cannot be made PHONY. Force their rebuild by depending on this.
+.PHONY: force
+force:
+	@
