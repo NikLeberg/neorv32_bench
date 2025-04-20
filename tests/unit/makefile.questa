@@ -1,0 +1,40 @@
+# SPDX-License-Identifier: MIT
+
+PROJ_ROOT ?= $(abspath ../..)
+include $(PROJ_ROOT)/scripts/makefile.neorv32
+
+.PHONY: test
+test: unit
+
+include makefile.units
+
+.PHONY: unit
+unit: $(UNIT_TOPS)
+
+.PHONY: analyze
+analyze: $(PROJ_ROOT)/build/unit/questa/modelsim.ini
+	$(info Analyzing neorv32 sources and testbenches.)
+	@cd $(PROJ_ROOT)/build/unit/questa && \
+		vcom -quiet -2008 -work neorv32 $(NEORV32_SRCS) && \
+		vcom -quiet -2008 $(UNIT_SRCS)
+
+%_tb: analyze force
+	$(info Running testbench '$*'.)
+	@cd $(PROJ_ROOT)/build/unit/questa && \
+		vsim -quiet -c -do $(PROJ_ROOT)/scripts/tools/questa_test.tcl $@
+
+$(PROJ_ROOT)/build/unit/questa/modelsim.ini:
+	@mkdir -p $(PROJ_ROOT)/build/unit/questa && \
+		cd $(PROJ_ROOT)/build/unit/questa && \
+		vmap -quiet -c
+
+# Pattern-rules cannot be made PHONY. Force their rebuild by depending on this.
+.PHONY: force
+force:
+	@
+
+# Special questa specific target: Open simulator GUI.
+.PHONY:
+sim: analyze
+	@cd $(PROJ_ROOT)/build/unit/questa && \
+		vsim -quiet

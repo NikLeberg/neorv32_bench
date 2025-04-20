@@ -1,0 +1,31 @@
+# SPDX-License-Identifier: MIT
+
+PROJ_ROOT ?= $(abspath ../..)
+include $(PROJ_ROOT)/scripts/makefile.neorv32
+
+.PHONY: test
+test: unit
+
+include makefile.units
+
+.PHONY: unit
+unit: $(UNIT_TOPS)
+
+.PHONY: analyze
+analyze:
+	$(info Analyzing neorv32 sources and testbenches.)
+	@mkdir -p $(PROJ_ROOT)/build/unit/nvc && \
+		cd $(PROJ_ROOT)/build/unit/nvc && \
+		nvc --std=08 -L. --work=neorv32 -a $(NEORV32_SRCS) && \
+		nvc --std=08 -L. -a --relaxed $(UNIT_SRCS)
+
+%_tb: analyze force
+	$(info Running testbench '$*'.)
+	@mkdir -p $(PROJ_ROOT)/build/unit/nvc && \
+		cd $(PROJ_ROOT)/build/unit/nvc && \
+		nvc --std=08 -L. -e $@ -r --ieee-warnings=off
+
+# Pattern-rules cannot be made PHONY. Force their rebuild by depending on this.
+.PHONY: force
+force:
+	@
