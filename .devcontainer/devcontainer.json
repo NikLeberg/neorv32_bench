@@ -1,0 +1,42 @@
+{
+    "name": "${localWorkspaceFolderBasename}",
+    "image": "ghcr.io/nikleberg/dev-base",
+    "runArgs": [
+        // set a human friendly machine name for the container
+        "--hostname=${localWorkspaceFolderBasename}",
+        // forward docker socket to allow Docker-outside-of-Docker (DooD)
+        "--volume=/var/run/docker.sock:/var/run/docker.sock",
+        // Install a script with aliases for DooD based tools / commands.
+        "--env=BASH_ENV=/workspaces/${localWorkspaceFolderBasename}/.devcontainer/.env"
+    ],
+    "customizations": {
+        "vscode": {
+            // IDs of extensions installed when the container is created.
+            "extensions": [
+                // syntax coloring
+                "puorc.awesome-vhdl",
+                // auto formatter
+                "vinrobot.vhdl-formatter",
+                // language server for linting
+                // comes also with coloring, overwritten by puorc.awesome-vhdl
+                "hbohlin.vhdl-ls",
+                // easy access for tasks defined in tasks.json
+                "spmeesseman.vscode-taskexplorer",
+                // TCL script coloring
+                "rashwell.tcl",
+                // C code Intellisense and code formater / helpers.
+                "ms-vscode.cpptools",
+                "cschlosser.doxdocgen"
+            ],
+            // Container specific settings.json values on container create.
+            "settings": {
+                // Slow down scrolling in intergrated terminal
+                "terminal.integrated.mouseWheelScrollSensitivity": 0.2,
+                // VHDL formatting: align all, end with newline, ignore else nl
+                "vhdl.formatter.align.all": true,
+                "vhdl.formatter.insertFinalNewline": true,
+                "vhdl.formatter.newline.else": "None"
+            }
+        }
+    }
+}

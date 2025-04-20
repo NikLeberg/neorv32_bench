@@ -1,0 +1,8 @@
+[libraries]
+neorv32.files = [
+    "neorv32/rtl/core/*.vhd",
+    "neorv32/sim/*.vhd",
+]
+tool.files = [
+    "tests/tool/*.vhd*",
+]

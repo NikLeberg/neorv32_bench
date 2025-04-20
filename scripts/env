@@ -1,0 +1,127 @@
+# SPDX-License-Identifier: MIT
+
+# Common arguments valid for all on-demand tools.
+function get_common_args () {
+    if [ -n "$GITHUB_ACTIONS" ]; then
+        common_vols="--volume /home/runner/work:/__w"
+        common_misc="--workdir $(pwd) --rm"
+    else
+        common_vols="--volumes-from $(cat /proc/self/cgroup | head -n 1 | cut -d '/' -f3)"
+        common_misc="--workdir $(pwd) --init --interactive --tty --rm"
+    fi
+    # alternative: DISPLAY=host.docker.internal:0
+    # alternative: DISPLAY=:0
+    common_disp="--env=DISPLAY=host.docker.internal:0 --volume=/tmp/.X11-unix/:/tmp/.X11-unix/"
+    common_args="$common_vols $common_disp $common_misc"
+    echo $common_args
+}
+export -f get_common_args
+
+# QuestaSim tool, simulation of HDL.
+function vsim () {
+    questa_args="--hostname questasim --mac-address=00:ab:ab:ab:ab:ab $(get_common_args)"
+    docker run $questa_args ghcr.io/nikleberg/questasim $*
+}
+export -f vsim
+function vcom () {
+    questa_args="--hostname questasim --entrypoint vcom $(get_common_args)"
+    docker run $questa_args ghcr.io/nikleberg/questasim $*
+}
+export -f vcom
+function questa_make () {
+    questa_args="--hostname questasim --mac-address=00:ab:ab:ab:ab:ab --entrypoint make $(get_common_args)"
+    docker run $questa_args ghcr.io/nikleberg/questasim $*
+}
+export -f questa_make
+function questa_bash () {
+    questa_args="--hostname questasim --mac-address=00:ab:ab:ab:ab:ab --entrypoint bash $(get_common_args)"
+    docker run $questa_args ghcr.io/nikleberg/questasim $*
+}
+export -f questa_bash
+
+# Quartus tool(s), analysis & synthesis of HDL for Intel FPGAs.
+# Note: The '--volume=/dev:/dev' and '--privileged' are to have access to
+#       USB/JTAG devices and allow to program FPGAs.
+function quartus_sh () {
+    quartus_args="--hostname quartus --volume=/dev:/dev --privileged --entrypoint quartus_sh $(get_common_args)"
+    docker run $quartus_args ghcr.io/nikleberg/quartus $*
+}
+export -f quartus_sh
+function quartus_make () {
+    quartus_args="--hostname quartus --volume=/dev:/dev --privileged --entrypoint make $(get_common_args)"
+    docker run $quartus_args ghcr.io/nikleberg/quartus $*
+}
+export -f quartus_make
+function quartus_bash () {
+    quartus_args="--hostname quartus --volume=/dev:/dev --privileged --entrypoint bash $(get_common_args)"
+    docker run $quartus_args ghcr.io/nikleberg/quartus $*
+}
+export -f quartus_bash
+
+# Make & GCC for Host + RISC-V cross-compiler.
+function riscv32-unknown-elf-gcc () {
+    riscv_args="--hostname riscv-gcc --entrypoint riscv32-unknown-elf-gcc $(get_common_args)"
+    docker run $riscv_args ghcr.io/nikleberg/riscv-gcc:13.2-rv32i $*
+}
+export -f riscv32-unknown-elf-gcc
+function openocd () {
+    riscv_args="--hostname riscv-gcc --entrypoint openocd $(get_common_args)"
+    docker run $riscv_args ghcr.io/nikleberg/riscv-gcc:13.2-rv32i $*
+}
+export -f openocd
+function riscv_make () {
+    riscv_args="--hostname riscv-gcc --entrypoint make $(get_common_args)"
+    docker run $riscv_args ghcr.io/nikleberg/riscv-gcc:13.2-rv32i $*
+}
+export -f riscv_make
+function riscv_bash () {
+    riscv_args="--hostname riscv-gcc --entrypoint bash $(get_common_args)"
+    docker run $riscv_args ghcr.io/nikleberg/riscv-gcc:13.2-rv32i $*
+}
+export -f riscv_bash
+
+# OSS tools for formal HDL verification.
+function ghdl () {
+    formal_args="--hostname formal --entrypoint ghdl $(get_common_args)"
+    docker run $formal_args ghcr.io/nikleberg/formal:latest-staging $*
+}
+export -f ghdl
+function sby () {
+    formal_args="--hostname formal --entrypoint sby $(get_common_args)"
+    docker run $formal_args ghcr.io/nikleberg/formal:latest-staging $*
+}
+export -f sby
+function yosys () {
+    formal_args="--hostname formal --entrypoint yosys $(get_common_args)"
+    docker run $formal_args ghcr.io/nikleberg/formal:latest-staging $*
+}
+export -f yosys
+function formal_make () {
+    formal_args="--hostname formal --entrypoint make $(get_common_args)"
+    docker run $formal_args ghcr.io/nikleberg/formal:latest-staging $*
+}
+export -f formal_make
+function ghdl_make () { formal_make $*; }
+export -f ghdl_make
+function formal_bash () {
+    formal_args="--hostname formal --entrypoint bash $(get_common_args)"
+    docker run $formal_args ghcr.io/nikleberg/formal:latest-staging $*
+}
+export -f formal_bash
+
+# NVC tool, simulation of HDL.
+function nvc () {
+    nvc_args="--hostname nvc $(get_common_args)"
+    docker run $nvc_args ghcr.io/nikleberg/nvc $*
+}
+export -f nvc
+function nvc_make () {
+    nvc_args="--hostname nvc --entrypoint make $(get_common_args)"
+    docker run $nvc_args ghcr.io/nikleberg/nvc $*
+}
+export -f nvc_make
+function nvc_bash () {
+    nvc_args="--hostname nvc --entrypoint bash $(get_common_args)"
+    docker run $nvc_args ghcr.io/nikleberg/nvc $*
+}
+export -f nvc_bash

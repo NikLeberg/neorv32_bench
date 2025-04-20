@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: MIT
+
+# Define bash as the shell to use for sub-shells. The environment variable
+# $BASH_ENV points to the env file containing aliases of commands for running in
+# docker containers. These aliases can then be used in recipies.
+SHELL = BASH_ENV=$(PROJ_ROOT)/scripts/env /bin/bash
+
+# No targets except the first goal target, which should be a tool name, are
+# executed by the below target. So enforce non-parallel execution that allows us
+# to forward the other targets to a sub-make in the tool specific container.
+.NOTPARALLEL:
+
+# Forward invocation of known tool to a sub-make in the tool specific container.
+# Requires tools to expose an "<tool>_make" entrypoint as alias.
+TOOLS := nvc formal ghdl questa
+.PHONY: $(TOOLS)
+$(TOOLS):
+	@command -v $@_make >/dev/null 2>&1 || (echo "Tool '$@' not found!" && exit 1)
+	@$@_make -f makefile.$@ $(subst $@,,$(MAKECMDGOALS)) PROJ_ROOT=$(PROJ_ROOT)

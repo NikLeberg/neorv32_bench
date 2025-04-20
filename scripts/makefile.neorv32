@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: MIT
+
+# Gather neorv32 sources.
+NEORV32_HOME = $(PROJ_ROOT)/neorv32
+NEORV32_SOC_FILE = $(shell cat $(NEORV32_HOME)/rtl/file_list_soc.f)
+NEORV32_SRCS = $(subst NEORV32_RTL_PATH_PLACEHOLDER, $(NEORV32_HOME)/rtl, $(NEORV32_SOC_FILE))
+
+# Additional system integration sources.
+NEORV32_SRCS += $(NEORV32_HOME)/rtl/system_integration/neorv32_litex_core_complex.vhd
+
+# Additional non-standard simulation sources.
+NEORV32_SRCS += $(NEORV32_HOME)/sim/xbus_memory.vhd
+NEORV32_SRCS += $(NEORV32_HOME)/sim/xbus_gateway.vhd
+
+# Make available for others.
+export NEORV32_SRCS
