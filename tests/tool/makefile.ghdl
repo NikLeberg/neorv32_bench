@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: MIT
+
+PROJ_ROOT ?= $(abspath ../..)
+include $(PROJ_ROOT)/scripts/makefile.neorv32
+
+.PHONY: test
+test: tool_ghdl
+
+TOOL_ELAB_SRCS = $(abspath tool_elab_tb.vhd)
+TOOL_SIM_SRCS = $(abspath tool_sim_tb.vhd)
+TOOL_ELAB_TOP = tool_elab_tb
+TOOL_SIM_TOP = tool_sim_tb
+TOOL_FIRMWARE = $(abspath neorv32_firmware.hex)
+
+.PHONY: tool_ghdl
+tool_ghdl:
+	@mkdir -p $(PROJ_ROOT)/build/tool/ghdl && \
+		cd $(PROJ_ROOT)/build/tool/ghdl && \
+		ghdl -a --std=08 --work=neorv32 $(NEORV32_SRCS) && \
+		ghdl -a --std=08 $(TOOL_ELAB_SRCS) $(TOOL_SIM_SRCS) && \
+		cp $(TOOL_FIRMWARE) . && \
+		ghdl -e --std=08 $(TOOL_SIM_TOP) && \
+		ghdl -r --std=08 $(TOOL_SIM_TOP) --ieee-asserts=disable
