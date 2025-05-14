@@ -12,7 +12,7 @@ SHELL = BASH_ENV=$(PROJ_ROOT)/scripts/env /bin/bash
 
 # Forward invocation of known tool to a sub-make in the tool specific container.
 # Requires tools to expose an "<tool>_make" entrypoint as alias.
-TOOLS := nvc formal ghdl questa
+TOOLS := nvc formal ghdl yosys questa
 .PHONY: $(TOOLS)
 $(TOOLS):
 	@command -v $@_make >/dev/null 2>&1 || (echo "Tool '$@' not found!" && exit 1)

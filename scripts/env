@@ -102,6 +102,7 @@ function formal_make () {
 }
 export -f formal_make
 function ghdl_make () { formal_make $*; }
+function yosys_make () { formal_make $*; }
 export -f ghdl_make
 function formal_bash () {
     formal_args="--hostname formal --entrypoint bash $(get_common_args)"
