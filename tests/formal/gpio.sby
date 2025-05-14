@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: MIT
+
+[tasks]
+bmc
+
+[options]
+depth 20
+bmc: mode bmc
+
+[engines]
+bmc: smtbmc yices
+
+[script]
+ghdl --std=08 --work=neorv32 neorv32_package.vhd neorv32_gpio.vhd gpio_vu.psl -e neorv32_gpio
+prep -auto-top
+
+[files]
+../../neorv32/rtl/core/neorv32_package.vhd
+../../neorv32/rtl/core/neorv32_gpio.vhd
+gpio_vu.psl

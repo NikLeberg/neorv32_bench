@@ -1,0 +1,20 @@
+-- =============================================================================
+-- File:                    gpio_vu.psl
+--
+-- VUnit:                   gpio_vu
+--
+-- Description:             Verification unit for the GPIO entity.
+--
+-- Author:                  Niklaus Leuenberger <@NikLeberg>
+--
+-- SPDX-License-Identifier: MIT
+--
+-- Version:                 0.1
+--
+-- Changes:                 0.1, 2025-04-20, NikLeberg
+--                              initial version
+-- =============================================================================
+
+vunit gpio_vu (neorv32_gpio) {
+    default clock is rising_edge(clk_i);
+}
